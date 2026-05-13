@@ -3,9 +3,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 from typing import Any
 import traceback
@@ -26,9 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-frontend = Path(__file__).resolve().parent.parent / "frontend" / "dist"
-if frontend.is_dir():
-    app.mount("/", StaticFiles(directory=str(frontend), html=True), name="frontend")
+FRONTEND_DIST = Path(__file__).resolve().parent.parent / "frontend" / "dist"
 
 
 class AnalyzeRequest(BaseModel):
@@ -171,3 +170,21 @@ def inbox(count: int = Query(10, ge=1, le=100), unread: bool = Query(False)):
         raise HTTPException(status_code=401, detail=str(e))
     except Exception:
         raise HTTPException(status_code=500, detail=traceback.format_exc())
+
+
+@app.get("/")
+def serve_root():
+    idx = FRONTEND_DIST / "index.html"
+    if idx.is_file():
+        return FileResponse(str(idx))
+    return HTMLResponse("<h1>Email Assistant API</h1><p>API is running. Frontend not built yet.</p>")
+
+
+@app.get("/{path:path}")
+def serve_spa(path: str):
+    if path.startswith("api/") and path != "api/":
+        raise HTTPException(status_code=404, detail="Not Found")
+    idx = FRONTEND_DIST / "index.html"
+    if idx.is_file():
+        return FileResponse(str(idx))
+    return HTMLResponse("<h1>Email Assistant API</h1><p>Frontend not built. Use /api/ endpoints.</p>")
