@@ -1,6 +1,16 @@
+---
+title: Email Assistant
+emoji: 📧
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+license: mit
+---
+
 # Email Assistant
 
-AI-powered email assistant for your terminal — summarizes, categorizes, extracts action items, and suggests replies. Uses the **OpenCode server API** as the LLM backend.
+AI-powered email assistant for your terminal and web — summarizes, categorizes, extracts action items, and suggests replies. Uses the **OpenCode server API** as the LLM backend.
 
 ## Quick Start
 
