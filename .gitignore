@@ -1,0 +1,8 @@
+credentials.json
+__pycache__/
+*.pyc
+email_assistant.egg-info/
+graphify-out/
+node_modules/
+dist/
+.env

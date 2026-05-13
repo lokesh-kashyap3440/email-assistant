@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "email-assistant"
+version = "0.1.0"
+description = "AI-powered email assistant — summarize, categorize, and action your Gmail inbox"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27.0",
+    "rich>=13.7.0",
+    "typer>=0.12.0",
+    "google-api-python-client>=2.120.0",
+    "google-auth-httplib2>=0.2.0",
+    "google-auth-oauthlib>=1.2.0",
+]
+
+[project.optional-dependencies]
+composio = ["composio-core>=0.7.0"]
+
+[project.scripts]
+email-assistant = "email_assistant.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["email_assistant*"]
