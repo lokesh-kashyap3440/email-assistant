@@ -162,7 +162,7 @@ def inbox(count: int = Query(10, ge=1, le=100), unread: bool = Query(False)):
         for e in emails:
             item = _email_to_dict(e)
             a = analysis_by_id.get(e.id, {})
-            item["analysis"] = a
+            item.update(a)
             combined.append(item)
 
         return {"emails": combined}
@@ -184,6 +184,9 @@ def serve_root():
 def serve_spa(path: str):
     if path.startswith("api/") and path != "api/":
         raise HTTPException(status_code=404, detail="Not Found")
+    file_path = FRONTEND_DIST / path
+    if file_path.exists() and file_path.is_file():
+        return FileResponse(str(file_path))
     idx = FRONTEND_DIST / "index.html"
     if idx.is_file():
         return FileResponse(str(idx))

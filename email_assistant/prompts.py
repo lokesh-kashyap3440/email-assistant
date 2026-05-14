@@ -2,7 +2,7 @@ SYSTEM_PROMPT_TEMPLATE = """You are an email assistant. Analyze the provided ema
 1. Summarize each email in 1-2 sentences
 2. Categorize it: one of [billing, newsletter, security, ai-tool, personal, social, alert, forum, promotion, other]
 3. Flag urgency: [urgent, important, normal, low]
-4. Extract any action items (things the user needs to do)
+4. Extract action items (things the user needs to do) as a list of strings
 5. Suggest a brief reply draft if action is needed
 
 For each email, use the actual ID value (e.g. "18f3...") as the "id" field, NOT the [1] index.
@@ -15,7 +15,7 @@ Respond STRICTLY in this JSON format (no markdown, no code fences):
       "summary": "...",
       "category": "...",
       "urgency": "...",
-      "action_item": "..." or null,
+      "action_items": ["item 1", "item 2"],
       "suggested_reply": "..." or null
     }
   ]

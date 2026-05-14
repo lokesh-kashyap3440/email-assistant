@@ -10,13 +10,8 @@ const categoryColors: Record<string, string> = {
   social: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
   promotion: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
   'ai-tool': 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/30',
+  'forum': 'bg-orange-500/10 text-orange-400 border-orange-500/30',
   other: 'bg-gray-500/10 text-gray-400 border-gray-500/30',
-}
-
-const priorityColors: Record<string, string> = {
-  high: 'text-red-400',
-  medium: 'text-yellow-400',
-  low: 'text-gray-400',
 }
 
 interface EmailCardProps {
@@ -50,31 +45,29 @@ export function EmailCard({ analysis }: EmailCardProps) {
 
           <div className="flex items-center gap-3 text-sm text-gray-400 mb-3">
             <span className="truncate">{analysis.sender}</span>
-            <span className="shrink-0">{analysis.time}</span>
+            <span className="shrink-0">{analysis.timestamp}</span>
           </div>
 
           <p className="text-sm text-gray-300 leading-relaxed mb-3">
             {analysis.summary}
           </p>
 
-          {analysis.actionItems && analysis.actionItems.length > 0 && (
+          {analysis.action_items && analysis.action_items.length > 0 && (
             <div className="mb-3 space-y-1">
-              {analysis.actionItems.map((item, i) => (
+              {analysis.action_items.map((item, i) => (
                 <div key={i} className="flex items-start gap-2 text-sm">
                   <ArrowRight size={14} className="mt-0.5 shrink-0 text-gray-500" />
-                  <span className={`${priorityColors[item.priority]}`}>
-                    {item.description}
-                  </span>
+                  <span className="text-gray-300">{item}</span>
                 </div>
               ))}
             </div>
           )}
 
-          {analysis.suggestedReply && (
+          {analysis.suggested_reply && (
             <div className="flex items-start gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700/50">
               <Reply size={14} className="mt-0.5 shrink-0 text-gray-500" />
               <p className="text-sm text-gray-400 italic leading-relaxed">
-                {analysis.suggestedReply}
+                {analysis.suggested_reply}
               </p>
             </div>
           )}

@@ -33,10 +33,7 @@ export function InboxView() {
   }, [fetchEmails])
 
   const filtered = filter === 'unread'
-    ? emails.filter((e) => {
-        const emailField = (e as unknown as Record<string, unknown>).isUnread
-        return emailField === true
-      })
+    ? emails.filter((e) => e.is_unread === true)
     : emails
 
   return (

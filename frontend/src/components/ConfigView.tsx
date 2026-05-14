@@ -22,12 +22,13 @@ export function ConfigView() {
     try {
       const res = await fetch('/api/config')
       if (!res.ok) throw new Error(`Server error: ${res.status}`)
-      const data: Config = await res.json()
-      setConfig(data)
+      const data = await res.json()
+      const cfg: Config = data.config || data
+      setConfig(cfg)
       setForm({
-        opencode_host: data.opencode_host || '',
-        opencode_port: String(data.opencode_port || ''),
-        opencode_password: data.opencode_password || '',
+        opencode_host: cfg.opencode_host || '',
+        opencode_port: String(cfg.opencode_port || ''),
+        opencode_password: '',
       })
     } catch (err) {
       setMessage({ type: 'error', text: err instanceof Error ? err.message : 'Failed to load config' })
@@ -42,7 +43,7 @@ export function ConfigView() {
     setMessage(null)
     try {
       const res = await fetch('/api/config', {
-        method: 'PUT',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           opencode_host: form.opencode_host,
@@ -68,7 +69,7 @@ export function ConfigView() {
     )
   }
 
-  const sensitiveKeys = ['opencode_password', 'gmail_token_path']
+  const sensitiveKeys = ['opencode_password', 'gmail_token_path', 'composio_key']
 
   return (
     <div>

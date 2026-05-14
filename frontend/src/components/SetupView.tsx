@@ -1,14 +1,9 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle, XCircle, Loader2, Upload } from 'lucide-react'
 
-interface AuthStatus {
-  gmail: boolean
-  opencode: boolean
-  message?: string
-}
-
 export function SetupView() {
-  const [status, setStatus] = useState<AuthStatus | null>(null)
+  const [gmailAuth, setGmailAuth] = useState<boolean | null>(null)
+  const [opencodeOk, setOpencodeOk] = useState<boolean | null>(null)
   const [checking, setChecking] = useState(true)
   const [credentialsPath, setCredentialsPath] = useState('')
   const [uploading, setUploading] = useState(false)
@@ -24,13 +19,11 @@ export function SetupView() {
       const auth = await authRes.json()
       const health = await healthRes.json()
 
-      setStatus({
-        gmail: auth.gmail === true || auth.gmail === 'connected',
-        opencode: health.opencode === 'ok' || health.status === 'ok',
-        message: auth.message || health.message,
-      })
+      setGmailAuth(auth.authenticated === true)
+      setOpencodeOk(health.opencode === true || health.status === 'ok')
     } catch {
-      setStatus({ gmail: false, opencode: false, message: 'Could not reach server' })
+      setGmailAuth(false)
+      setOpencodeOk(false)
     } finally {
       setChecking(false)
     }
@@ -46,17 +39,17 @@ export function SetupView() {
     setUploading(true)
     setMessage(null)
     try {
-      const res = await fetch('/api/setup', {
+      const res = await fetch('/api/auth/setup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credentials_path: credentialsPath.trim() }),
+        body: JSON.stringify({ creds_path: credentialsPath.trim() }),
       })
       const data = await res.json()
       if (res.ok) {
         setMessage({ type: 'success', text: data.message || 'Setup initiated. Check the auth URL in the server console.' })
         await checkStatus()
       } else {
-        setMessage({ type: 'error', text: data.detail || data.message || 'Setup failed' })
+        setMessage({ type: 'error', text: data.detail || 'Setup failed' })
       }
     } catch (err) {
       setMessage({ type: 'error', text: err instanceof Error ? err.message : 'Setup failed' })
@@ -79,28 +72,28 @@ export function SetupView() {
         ) : (
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              {status?.opencode ? (
+              {opencodeOk ? (
                 <CheckCircle size={18} className="text-green-400" />
               ) : (
                 <XCircle size={18} className="text-red-400" />
               )}
               <span className="text-sm">
                 <span className="text-gray-400">OpenCode Server:</span>{' '}
-                <span className={status?.opencode ? 'text-green-400' : 'text-red-400'}>
-                  {status?.opencode ? 'Connected' : 'Disconnected'}
+                <span className={opencodeOk ? 'text-green-400' : 'text-red-400'}>
+                  {opencodeOk ? 'Connected' : 'Disconnected'}
                 </span>
               </span>
             </div>
             <div className="flex items-center gap-3">
-              {status?.gmail ? (
+              {gmailAuth ? (
                 <CheckCircle size={18} className="text-green-400" />
               ) : (
                 <XCircle size={18} className="text-red-400" />
               )}
               <span className="text-sm">
                 <span className="text-gray-400">Gmail API:</span>{' '}
-                <span className={status?.gmail ? 'text-green-400' : 'text-red-400'}>
-                  {status?.gmail ? 'Authenticated' : 'Not authenticated'}
+                <span className={gmailAuth ? 'text-green-400' : 'text-red-400'}>
+                  {gmailAuth ? 'Authenticated' : 'Not authenticated'}
                 </span>
               </span>
             </div>
@@ -108,7 +101,7 @@ export function SetupView() {
         )}
       </div>
 
-      {!status?.gmail && (
+      {!gmailAuth && (
         <div className="card p-5">
           <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Gmail OAuth Setup</h2>
           <p className="text-sm text-gray-500 mb-4">
@@ -148,7 +141,7 @@ export function SetupView() {
         </div>
       )}
 
-      {status?.gmail && (
+      {gmailAuth && (
         <div className="card p-5">
           <div className="flex items-center gap-3">
             <CheckCircle size={20} className="text-green-400" />
